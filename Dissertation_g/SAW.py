@@ -1,64 +1,73 @@
-import matplotlib.animation as animation 
+import matplotlib.animation as ani
 import matplotlib.pyplot as plt
 import numpy as np
 
-direction= ["East","West","North","South"]
-n = 200
+
+def size(n):
+    if n>0:
+        return 1
+    else:
+        return -1
+ 
+ 
+n = 250
 x = np.zeros(n+1, dtype=int)
 y = np.zeros(n+1, dtype=int)
-
-for i in range(n+1):
-    if i==0:
-      continue 
-    else:
-      step = np.random.choice(direction)
-      if step == "East":
-        x[i] = x[i-1] + 1
-        y[i] = y[i-1]
-      elif step == "West":
-        x[i] = x[i-1] - 1
-        y[i] = y[i-1]
-      elif step == "North":
-        x[i] = x[i-1]
-        y[i] = y[i-1] + 1
-      else:
-        x[i] = x[i-1]
-        y[i] = y[i-1] - 1  
+direction = np.array(["East", "West", "North", "South"])
+   
     
-      while ((x[i] in x[:i-1]) and (y[i] in y[:i-1])):
-        step = np.random.choice(direction)
-        if step == "East":
-          x[i] = x[i-1] + 1
-          y[i] = y[i-1]
-        elif step == "West":
-          x[i] = x[i-1] - 1
-          y[i] = y[i-1]
-        elif step == "North":
-          x[i] = x[i-1]
-          y[i] = y[i-1] + 1
-        else:
-          x[i] = x[i-1]
-          y[i] = y[i-1] - 1
+for i in range(1, n+1):
+    step = np.random.choice(direction)
+    if step=="East":
+        x[i]= x[i-1] +1
+        y[i]= y[i-1]
+    elif step=="West":
+        x[i]= x[i-1] -1
+        y[i]= y[i-1]   
+    elif step=="North":
+        x[i]= x[i-1]
+        y[i]= y[i-1] +1
+    else:
+        x[i]= x[i-1]
+        y[i]= y[i-1] -1
+        
+    if i>=2:
+        while (x[i] in x[:i-1]) and (y[i] in y[:i-1]):
+            step = np.random.choice(direction)
+            if step == "East":
+                x[i] = x[i-1] + 1
+                y[i] = y[i-1]
+            elif step == "West":
+                x[i] = x[i-1] - 1
+                y[i] = y[i-1]
+            elif step == "North":
+                x[i] = x[i-1]
+                y[i] = y[i-1] + 1
+            else:
+                x[i] = x[i-1]
+                y[i] = y[i-1] - 1
 
 
-fig=plt.figure()
-ax=fig.add_subplot()
-ax=plt.axes(xlim=(min(x)-1, max(x)+1), ylim=(min(y)-1, max(y)+1))
-sarw1, =ax.plot([], [],'b', label= "For 200 Steps")
-walker1, =ax.plot([], [], 'r*', markersize =18, label="Drunkard")
-position1, =ax.plot([], [],'mo',markersize=3)
+fig = plt.figure()
+canvas = plt.axes(xlim=(min(x)+size(min(x)),max(x)+size(max(x))),ylim= (min(y)+size(min(y)),max(y)+size(max(y))))
+drunkard, = canvas.plot(x[0],y[0],marker='*', markerfacecolor="red", markersize =30, label="Drunkard")
+step, = canvas.plot(x[0],y[0],marker='.', markerfacecolor="black", markersize =10)
+walk, = canvas.plot(x[0],y[0], color="blue")
 
-def SARW(i):
-  sarw1.set_data(x[:i+1], y[:i+1])
-  walker1.set_data(x[i], y[i])
-  position1.set_data(x[:i+1], y[:i+1])
-  return sarw1, walker1, position1, 
 
-anim= animation.FuncAnimation(fig, SARW, frames=n+1,interval=100,blit=True,repeat =False)
+def journey(i):
+    drunkard.set_data(x[i],y[i])         
+    step.set_data(x[:i+1],y[:i+1])            
+    walk.set_data(x[:i+1],y[:i+1])
+    return drunkard, step, walk,
 
+
+anime=ani.FuncAnimation(fig,journey,frames=n+1,interval= 250,blit=True,repeat=False)     
+canvas.plot(x[0],y[0],marker="D",markerfacecolor="gold",markersize=10,label= "Start")
+canvas.plot(x[-1],y[-1],marker="D",markerfacecolor="orange",markersize=10,label="End")
+fig.suptitle(f"Self Avoiding Random Walk for n = {n} steps")
 fig.patch.set_facecolor("lime")
-fig.tight_layout()
-fig.suptitle("Self Avoiding Random Walk in 2D")
-plt.axis(False)
-plt.legend()
-plt.show()
+canvas.axis(False)
+plt.legend(loc="best")
+# anime.save("SAW.gif")
+plt.show() 
