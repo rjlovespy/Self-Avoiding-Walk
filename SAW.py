@@ -9,6 +9,14 @@ def size(n):
     else:
         return -1
  
+
+# Checks coordinate retracing
+def sameCoordinateVisited(check_index, l1, l2):
+    for j in range(check_index):
+        if (l1[check_index] == l1[j]) and (l2[check_index] == l2[j]):
+            return True
+    return False
+ 
  
 n = 250
 x = np.zeros(n+1, dtype=int)
@@ -32,7 +40,8 @@ for i in range(1, n+1):
         y[i]= y[i-1] -1
         
     if i>=2:
-        while (x[i] in x[:i-1]) and (y[i] in y[:i-1]):
+        # Replace while condition with sameCoordinateVisited(i, x, y) for a general SAW
+        while (x[i] in x[:i-1]) and (y[i] in y[:i-1]): 
             step = np.random.choice(direction)
             if step == "East":
                 x[i] = x[i-1] + 1
@@ -65,7 +74,7 @@ def journey(i):
 anime=ani.FuncAnimation(fig,journey,frames=n+1,interval= 250,blit=True,repeat=False)     
 canvas.plot(x[0],y[0],marker="D",markerfacecolor="gold",markersize=10,label= "Start")
 canvas.plot(x[-1],y[-1],marker="D",markerfacecolor="orange",markersize=10,label="End")
-fig.suptitle(f"Self Avoiding Random Walk for n = {n} steps")
+fig.suptitle(f"Self Avoiding Random Walk of {n} steps")
 fig.patch.set_facecolor("lime")
 canvas.axis(False)
 plt.legend(loc="best")
